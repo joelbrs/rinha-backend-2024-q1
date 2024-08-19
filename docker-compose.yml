@@ -1,6 +1,20 @@
 version: "3.8"
 
 services:
+  api:
+    build:
+      context: .
+    container_name: RINHA_API
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    mem_limit: 512m
+    cpus: 0.5
   db:
     container_name: RINHA_DB
     image: postgres
