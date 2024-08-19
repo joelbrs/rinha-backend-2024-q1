@@ -13,7 +13,7 @@ public class Transaction {
     private Long id;
 
     @Column(name = "tipo")
-    private String type;
+    private Character type;
 
     @Column(name = "descricao")
     private String description;
@@ -35,7 +35,7 @@ public class Transaction {
         return id;
     }
 
-    public String getType() {
+    public Character getType() {
         return type;
     }
 
