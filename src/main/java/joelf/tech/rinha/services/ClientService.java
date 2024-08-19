@@ -23,6 +23,10 @@ public class ClientService {
     }
 
     public ExtractDtoResponse getExtractByClientId(Long id) {
-        return new ExtractDtoResponse(null, null);
+        var balance = balanceRepository.getBalanceByClientId(id);
+        var transactions = transactionRepository.getTransactionByClientId(id);
+
+        return new ExtractDtoResponse(modelMapper.map(balance, BalanceDtoResponse.class),
+                transactions.stream().map(t -> modelMapper.map(t, TransactionDtoResponse.class)).toList());
     }
 }
