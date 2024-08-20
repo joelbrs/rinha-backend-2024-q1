@@ -2,9 +2,12 @@ package joelf.tech.rinha.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import joelf.tech.rinha.dtos.request.TransactionDtoRequest;
 import joelf.tech.rinha.dtos.response.*;
-
+import joelf.tech.rinha.enums.TransactionType;
+import joelf.tech.rinha.models.Transaction;
 import joelf.tech.rinha.repositories.*;
 
 @Service
@@ -28,5 +31,18 @@ public class ClientService {
 
         return new ExtractDtoResponse(modelMapper.map(balance, BalanceDtoResponse.class),
                 transactions.stream().map(t -> modelMapper.map(t, TransactionDtoResponse.class)).toList());
+    }
+
+    public BalanceSimpleDtoResponse createTransaction(TransactionDtoRequest request, Long id) {
+        transactionRepository.save(modelMapper.map(request, Transaction.class));
+
+        if (request.getTipo().equals(TransactionType.CREDIT)) {
+            var balance = balanceRepository.sumBalanceByClientId(id, request.getValor());
+
+            return modelMapper.map(balance, BalanceSimpleDtoResponse.class);
+        }
+        var balance = balanceRepository.subtractBalanceByClientId(id, request.getValor());
+
+        return modelMapper.map(balance, BalanceSimpleDtoResponse.class);
     }
 }

@@ -28,6 +28,10 @@ public class Balance {
         return value;
     }
 
+    public Client getClient() {
+        return client;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
