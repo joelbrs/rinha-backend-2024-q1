@@ -1,6 +1,7 @@
 package joelf.tech.rinha.models;
 
 import jakarta.persistence.*;
+import joelf.tech.rinha.enums.TransactionType;
 
 import java.time.*;
 
@@ -13,7 +14,7 @@ public class Transaction {
     private Long id;
 
     @Column(name = "tipo")
-    private Character type;
+    private TransactionType type;
 
     @Column(name = "descricao")
     private String description;
@@ -35,7 +36,7 @@ public class Transaction {
         return id;
     }
 
-    public Character getType() {
+    public TransactionType getType() {
         return type;
     }
 
