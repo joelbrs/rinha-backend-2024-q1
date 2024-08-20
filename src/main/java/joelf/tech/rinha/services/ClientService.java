@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import joelf.tech.rinha.dtos.request.TransactionDtoRequest;
 import joelf.tech.rinha.dtos.response.*;
 import joelf.tech.rinha.enums.TransactionType;
+import joelf.tech.rinha.exceptions.BusinessRuleException;
+import joelf.tech.rinha.exceptions.ResourceNotFoundException;
 import joelf.tech.rinha.models.Transaction;
 import joelf.tech.rinha.repositories.*;
 
@@ -28,7 +30,7 @@ public class ClientService {
 
     public ExtractDtoResponse getExtractByClientId(Long id) {
         if (!clientRepository.existsById(id)) {
-            throw new RuntimeException();
+            throw new ResourceNotFoundException("Client does not exists.");
         }
 
         var balance = balanceRepository.getBalanceByClientId(id);
@@ -54,11 +56,11 @@ public class ClientService {
 
     public void validateTransactionCreation(Long userId, Integer value) {
         if (!clientRepository.existsById(userId)) {
-            throw new RuntimeException();
+            throw new ResourceNotFoundException("Client does not exists.");
         }
 
         if (balanceRepository.findBalanceWithValueAboveLimite(userId, value) == null) {
-            throw new RuntimeException();
+            throw new BusinessRuleException("Invalid balance.");
         }
     }
 }
