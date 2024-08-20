@@ -16,15 +16,21 @@ public class ClientService {
 
     private final TransactionRepository transactionRepository;
     private final BalanceRepository balanceRepository;
+    private final ClientRepository clientRepository;
 
     public ClientService(ModelMapper modelMapper, TransactionRepository transactionRepository,
-            BalanceRepository balanceRepository) {
+            BalanceRepository balanceRepository, ClientRepository clientRepository) {
         this.modelMapper = modelMapper;
         this.transactionRepository = transactionRepository;
         this.balanceRepository = balanceRepository;
+        this.clientRepository = clientRepository;
     }
 
     public ExtractDtoResponse getExtractByClientId(Long id) {
+        if (!clientRepository.existsById(id)) {
+            throw new RuntimeException();
+        }
+
         var balance = balanceRepository.getBalanceByClientId(id);
         var transactions = transactionRepository.getTransactionByClientId(id);
 
@@ -47,6 +53,10 @@ public class ClientService {
     }
 
     public void validateTransactionCreation(Long userId, Integer value) {
+        if (!clientRepository.existsById(userId)) {
+            throw new RuntimeException();
+        }
+
         if (balanceRepository.findBalanceWithValueAboveLimite(userId, value) == null) {
             throw new RuntimeException();
         }
