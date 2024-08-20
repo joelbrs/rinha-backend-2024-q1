@@ -22,7 +22,12 @@ public interface BalanceRepository extends JpaRepository<Balance, Long> {
 
         @Query(nativeQuery = true, value = "UPDATE tb_saldo ts SET ts.valor = ts.valor - :value "
                         + "FROM (SELECT * FROM tb_client tc WHERE tc.id = :id) "
-                        + "where ts.client_id = :id and ABS(ts.valor - :value) <= limite "
+                        + "where ts.client_id = :id"
                         + "RETURNING *")
         public Balance subtractBalanceByClientId(Long id, Integer value);
+
+        @Query(nativeQuery = true, value = "SELECT * FROM tb_saldo "
+                        + "INNER JOIN tb_client tc on tc.id = ts.client_id "
+                        + "where ts.client_id = :id and abs(ts.valor - :value) <= tc.limite")
+        public Balance findBalanceWithValueAboveLimite(Long id, Integer value);
 }

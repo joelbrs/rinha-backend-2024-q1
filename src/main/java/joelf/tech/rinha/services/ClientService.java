@@ -2,7 +2,6 @@ package joelf.tech.rinha.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import joelf.tech.rinha.dtos.request.TransactionDtoRequest;
 import joelf.tech.rinha.dtos.response.*;
@@ -34,6 +33,7 @@ public class ClientService {
     }
 
     public BalanceSimpleDtoResponse createTransaction(TransactionDtoRequest request, Long id) {
+        validateTransactionCreation(id, request.getValor());
         transactionRepository.save(modelMapper.map(request, Transaction.class));
 
         if (request.getTipo().equals(TransactionType.CREDIT)) {
@@ -44,5 +44,11 @@ public class ClientService {
         var balance = balanceRepository.subtractBalanceByClientId(id, request.getValor());
 
         return modelMapper.map(balance, BalanceSimpleDtoResponse.class);
+    }
+
+    public void validateTransactionCreation(Long userId, Integer value) {
+        if (balanceRepository.findBalanceWithValueAboveLimite(userId, value) == null) {
+            throw new RuntimeException();
+        }
     }
 }
